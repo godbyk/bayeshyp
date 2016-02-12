@@ -9,6 +9,7 @@
 \RequirePackage{expl3}
 \RequirePackage{xparse}
 
+\PassOptionsToClass{nohyper}{tufte-book}
 
 \LoadClass{tufte-book}
 
@@ -36,7 +37,7 @@
 \NewDocumentCommand \theauthors { } {
   \clist_clear:N \g_tmpa_clist
   \clist_map_inline:Nn \g_tufte_authors_clist {
-    \clist_push:Nn \g_tmpa_clist { \mbox{##1} }
+    \clist_put_right:Nn \g_tmpa_clist { \mbox{##1} }
   }
   \clist_use:Nnnn \g_tmpa_clist { ~and~ } { ,~ } { ,~and~ }
 }
@@ -66,6 +67,42 @@
   \clearpage
 }
 
+
+%
+% Formatting of headings
+%
+
+\titleformat{\chapter}%
+    [display]% shape
+    {\normalfont\fontsize{14}{14}\selectfont\itshape}% format applied to label+text
+    {}% label
+    {0pt}% horiz separation between label and title body
+    {\vspace{1in}}% before the title body
+    []% after the title body
+
+\setcounter{secnumdepth}{1}
+
+%
+% Formatting of table of contents
+%
+
+\setcounter{tocdepth}{1}
+
+\titlecontents{part}%
+    [0pt]% distance from left margin
+    {\addvspace{0.25\baselineskip}}% above (global formatting of entry)
+    {\allcaps{Part~\thecontentslabel}\allcaps}% before w/ label (label = ``Part I'')
+    {\allcaps{Part~\thecontentslabel}\allcaps}% before w/o label
+    {}% filler and page (leaders and page num)
+    [\vspace*{0.5\baselineskip}]% after
+
+\titlecontents{chapter}%
+    [4em]% distance from left margin
+    {}% above (global formatting of entry)
+    {\contentslabel{2em}\textit}% before w/ label (label = ``Chapter 1'')
+    {\hspace{0em}\textit}% before w/o label
+    {\qquad\thecontentspage}% filler and page (leaders and page num)
+    [\vspace*{0.5\baselineskip}]% after
 
 
 

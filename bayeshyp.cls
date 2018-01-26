@@ -120,6 +120,9 @@
   image         .tl_set:N = \l_bayes_part_image_tl,
   image-options .tl_set:N = \l_bayes_part_graphics_options_tl,
   toc           .tl_set:N = \l_bayes_part_toc_tl,
+  unknown       .code:n = {
+    \tl_set:Nn \l_bayes_part_toc_tl { \l_keys_key_tl }
+  },
 }
 
 \cs_set_eq:NN \bayes_backup_part: \part

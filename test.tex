@@ -1,5 +1,16 @@
 \documentclass{bayeshyp}
 
+\usepackage[logonly]{trace}% for debugging purposes only
+\usepackage{lipsum}% for testing purposes only
+
+% FIXME hackish workaround that should be fixed upstream in Tufte-LaTeX
+% Set up the spacing using fontspec features
+\usepackage{ifxetex}
+\ifxetex
+  \renewcommand\allcapsspacing[1]{{\addfontfeature{LetterSpace=15}#1}}
+  \renewcommand\smallcapsspacing[1]{{\addfontfeature{LetterSpace=10}#1}}
+\fi
+
 \title{Bayesian Hypothesis Testing Without Tears}
 \subtitle{Examples for Students}
 \authors{%
@@ -27,9 +38,15 @@
 
 \setcounter{secnumdepth}{4}
 
-\part{Graphical Practice}
+\part[image={example-image-a}]{Graphical Practice}
+\traceon
+\part[image={example-image-b},image-options={width=0.25\textwidth},toc={Shorter part title}]{Super long part title that wouldn't fit nicely in a table of contents or running head}
+\traceoff
+
 \chapter{Graphical Excellence}
 \setcounter{page}{13}
+
+\lipsum
 
 \chapter{Graphical Integrity}
 \setcounter{page}{53}

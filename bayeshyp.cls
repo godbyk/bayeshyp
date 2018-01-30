@@ -7,10 +7,15 @@
 \RequirePackage{expl3}
 \RequirePackage{xparse}
 
-\ProvidesExplPackage {bayeshyp} {2017/01/26} {1.0.1}
+\ProvidesExplClass {bayeshyp} {2017/01/26} {1.0.1}
   {Bayes Hypothesis Testing book design}
 
-\PassOptionsToClass{nohyper}{tufte-book}
+%
+% Pass any class options to the underlying tufte-book class
+%
+\DeclareOption* { \PassOptionsToClass { \CurrentOption } { tufte-book } }
+
+\ProcessOptions
 
 \LoadClass{tufte-book}
 
@@ -92,8 +97,8 @@
 \titlecontents{part}%
     [0pt]% distance from left margin
     {\addvspace{0.25\baselineskip}}% above (global formatting of entry)
-    {\allcaps{Part~\thecontentslabel}\allcaps}% before w/ label (label = ``Part I'')
-    {\allcaps{Part~\thecontentslabel}\allcaps}% before w/o label
+    {{\tl_upper_case:n{\partname\nobreakspace\thecontentslabel}}\uppercase}% before w/ label (label = ``Part I'')
+    {{\tl_upper_case:n{\partname\nobreakspace\thecontentslabel}}\uppercase}% before w/o label
     {}% filler and page (leaders and page num)
     [\vspace*{0.5\baselineskip}]% after
 
@@ -114,15 +119,16 @@
 \tl_new:N \l_bayes_part_graphics_options_tl
 \tl_new:N \l_bayes_part_toc_tl
 \tl_new:N \l_bayes_part_image_tl
+\msg_new:nnn { bayeshyp } { old-style-short-heading } {
+  Use ~ the ~ new ~ `toc={short ~ heading}' ~ key-value ~ pair.
+}
 
 \keys_define:nn { bayeshyp / part } {
   starred       .bool_set:N = \l_bayes_part_starred_bool,
   image         .tl_set:N = \l_bayes_part_image_tl,
   image-options .tl_set:N = \l_bayes_part_graphics_options_tl,
   toc           .tl_set:N = \l_bayes_part_toc_tl,
-  unknown       .code:n = {
-    \tl_set:Nn \l_bayes_part_toc_tl { \l_keys_key_tl }
-  },
+  unknown       .code:n = { \msg_error:nn { bayeshyp } { old-style-short-heading } },
 }
 
 \cs_set_eq:NN \bayes_backup_part: \part
@@ -133,10 +139,11 @@
     \bool_if:NTF \l_bayes_part_starred_bool {
       \bayes_backup_part:*{#2}
     } {
-      \tl_if_empty:NT \l_bayes_part_toc_tl {
-        \tl_set:Nn \l_bayes_part_toc_tl {#2}
+      \tl_if_empty:NTF \l_bayes_part_toc_tl {
+        \bayes_backup_part:[#2]{#2}
+      } {
+        \bayes_backup_part:[\l_bayes_part_toc_tl]{#2}
       }
-      \bayes_backup_part:[\l_bayes_part_toc_tl]{#2}
     }
   \group_end:
 }

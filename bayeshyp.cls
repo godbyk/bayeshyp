@@ -188,6 +188,3 @@
 
 \cs_set_eq:NN \part \Part
 
-% FIXME Temporary
-\let\subsubsection\subsection
-

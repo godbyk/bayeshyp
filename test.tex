@@ -2,6 +2,7 @@
 
 \usepackage[logonly]{trace}% for debugging purposes only
 \usepackage{lipsum}% for testing purposes only
+\usepackage[math]{blindtext}% for testing purposes only
 
 % FIXME hackish workaround that should be fixed upstream in Tufte-LaTeX
 % Set up the spacing using fontspec features
@@ -38,9 +39,15 @@
 
 \setcounter{secnumdepth}{4}
 
+\part{Blind document}
+\Blinddocument
+
 \part[image={example-image-a}]{Graphical Practice}
 
 \part[image={example-image-b},image-options={width=0.25\textwidth},toc={Shorter part title}]{Super long part title that wouldn't fit nicely in a table of contents or running head}
+\chapter{Chapter heading}
+\section{Section heading}
+\section{Another section heading---this one longer to force wrapping in the table of contents}
 \lipsum
 
 \part[toc={Old-style, short title=this}]{Another super long part title that wouldn't fit nicely in a table of contents or running head}

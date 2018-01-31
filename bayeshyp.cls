@@ -79,12 +79,12 @@
 %
 
 \titleformat{\chapter}%
-    [display]% shape
-    {\normalfont\fontsize{14}{14}\selectfont\itshape}% format applied to label+text
-    {}% label
-    {0pt}% horiz separation between label and title body
-    {\vspace{1in}}% before the title body
-    []% after the title body
+  [block]% shape
+  {\relax\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\begin{fullwidth}}{}}% format applied to label+text
+  {\itshape\huge\thechapter\quad}% label
+  {0pt}% horizontal separation between label and title body
+  {\huge\rmfamily\itshape}% before the title body
+  [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
 
 \setcounter{secnumdepth}{1}
 
@@ -94,21 +94,32 @@
 
 \setcounter{tocdepth}{1}
 
+\dim_new:N \g_bayes_contentsindent_dim
+\dim_set:Nn \g_bayes_contentsindent_dim {1.5em}
+
 \titlecontents{part}%
     [0pt]% distance from left margin
-    {\addvspace{0.25\baselineskip}}% above (global formatting of entry)
-    {{\tl_upper_case:n{\partname\nobreakspace\thecontentslabel}}\uppercase}% before w/ label (label = ``Part I'')
-    {{\tl_upper_case:n{\partname\nobreakspace\thecontentslabel}}\uppercase}% before w/o label
+    {\vspace{0.5\baselineskip}}% above (global formatting of entry)
+    {{\tl_upper_case:n{\partname\space\thecontentslabel}}\uppercase}% before w/ label (label = ``Part I'')
+    {{\tl_upper_case:n{\partname\space\thecontentslabel}}\uppercase}% before w/o label
     {}% filler and page (leaders and page num)
-    [\vspace*{0.5\baselineskip}]% after
+    []% below
 
 \titlecontents{chapter}%
-    [4em]% distance from left margin
-    {}% above (global formatting of entry)
-    {\contentslabel{2em}\textit}% before w/ label (label = ``Chapter 1'')
-    {\hspace{0em}\textit}% before w/o label
+    [2\g_bayes_contentsindent_dim]% distance from left margin
+    {\vspace{0.5\baselineskip}}% above (global formatting of entry)
+    {\contentslabel{\g_bayes_contentsindent_dim}\textit}% before w/ label (label = ``Chapter 1'')
+    {\textit}% before w/o label
     {\qquad\thecontentspage}% filler and page (leaders and page num)
-    [\vspace*{0.5\baselineskip}]% after
+    []%[\vspace*{0.5\baselineskip}]% after
+
+\titlecontents{section}%
+    [3.5\g_bayes_contentsindent_dim]% distance from left margin
+    {}% above (global formatting of entry)
+    {\contentslabel{1.5\g_bayes_contentsindent_dim}}% before w/ label (label = ``1.1'')
+    {}% before w/o label
+    {\qquad\thecontentspage}% filler and page (leaders and page num)
+    []%[\vspace*{0.5\baselineskip}]% after
 
 
 %
@@ -177,4 +188,6 @@
 
 \cs_set_eq:NN \part \Part
 
+% FIXME Temporary
+\let\subsubsection\subsection
 

@@ -136,6 +136,7 @@
 % Define extended heading macros
 %
 
+% Part
 \bool_new:N \l_bayes_part_starred_bool
 \tl_new:N \l_bayes_part_graphics_options_tl
 \tl_new:N \l_bayes_part_toc_tl
@@ -197,6 +198,55 @@
 }
 
 \cs_set_eq:NN \part \Part
+
+% Chapter
+\bool_new:N \l_bayes_chapter_starred_bool
+\tl_new:N \l_bayes_chapter_toc_tl
+\tl_new:N \l_bayes_chapter_byline_tl
+\keys_define:nn { bayeshyp / chapter } {
+  starred       .bool_set:N = \l_bayes_chapter_starred_bool,
+  toc           .tl_set:N = \l_bayes_chapter_toc_tl,
+  byline        .tl_set:N = \l_bayes_chapter_byline_tl,
+  unknown       .code:n = { \msg_error:nn { bayeshyp } { old-style-short-heading } },
+}
+
+\cs_set_eq:NN \bayes_backup_chapter: \chapter
+
+\cs_new:Npn \cs_bayes_chapter:nn #1#2 {
+  \group_begin:
+    \keys_set:nn {bayeshyp / chapter} {#1}
+    \tl_if_empty:NF \l_bayes_chapter_byline_tl {
+      \tl_put_left:Nn \l_bayes_chapter_byline_tl {\\ \LARGE}
+    }
+    \bool_if:NTF \l_bayes_chapter_starred_bool {
+      \bayes_backup_chapter:*{#2 \l_bayes_chapter_byline_tl}
+    } {
+      \tl_if_empty:NTF \l_bayes_chapter_toc_tl {
+        \bayes_backup_chapter:[#2]{#2 \l_bayes_chapter_byline_tl}
+      } {
+        \bayes_backup_chapter:[\l_bayes_chapter_toc_tl]{#2 \l_bayes_chapter_byline_tl}
+      }
+    }
+  \group_end:
+}
+
+\NewDocumentCommand \Chapter { s o m } {
+  \IfBooleanTF {#1} {
+    \IfValueTF {#2} {
+      \cs_bayes_chapter:nn {starred=true,#2} {#3}
+    } {
+      \cs_bayes_chapter:nn {starred=true} {#3}
+    }
+  } {
+    \IfValueTF {#2} {
+      \cs_bayes_chapter:nn {starred=false,#2} {#3}
+    } {
+      \cs_bayes_chapter:nn {starred=false} {#3}
+    }
+  }
+}
+
+\cs_set_eq:NN \chapter \Chapter
 
 %
 % Code listings

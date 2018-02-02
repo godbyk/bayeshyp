@@ -82,6 +82,43 @@ A comma-separated list of authors may be provided using the \syn|\authors| macro
 The authors are listed on the title page in the order provided.
 Author names will not be split across lines.
 
+\section{Headings}
+
+Some headings have been modified to provide more typesetting options than usual. These modifications were done at the cost of backward-compatibility, however.
+
+The original heading commands general follow the following format:
+\begin{syntax}
+  \chapter[<toc entry>]{Chapter title}
+\end{syntax}
+
+The new format requires that \syn|<toc entry>| be assigned to the new \syn|toc| key. The optional argument now contains a list of key--value pairs:
+\begin{syntax}
+  \chapter[<key-value pairs>]{Chapter title}
+\end{syntax}
+
+The key--value pairs differ based on the heading level.
+
+\begin{itemize}
+  \item \syn|toc| \textit{(part, chapter)} This is the text you wish to appear
+    in the table of contents for this heading. If left unspecified, it defaults
+    to the full text of the heading. This option is useful if your heading
+    contains special formatting that needs to be adjusted for typesetting in
+    the table of contents or if the heading is very long and you want a shorter
+    heading for the table of contents. For chapter headings, this entry is also
+    used for the running heads at the top of the pages.
+  \item \syn|image| \textit{(part)} On part pages, an image may be included.
+    This option specifies the filename for the image.
+  \item \syn|image-otions| \textit{(part)} This option specifies any
+    key--value options that should be passed to the \syn|\includegraphics|
+    macro used to insert the image on the part page. See the \texttt{graphics}
+    package documentation for details.
+  \item \syn|byline| \textit{(chapter)} Chapter headings may include a byline
+    to list a chapter author, for example. The byline is not included in the
+    table of contents entry. Example: \syn|\chapter[byline={with Kevin Godby}]{Chapter heading}|.
+\end{itemize}
+
+
+
 
 \section{Mathematical notation shortcuts}
 
@@ -141,6 +178,11 @@ disp('Look, a margin note!'); (*@ This comment appears in the margin note area. 
 \part{Demonstrations}
 
 \chapter{Chapter heading}
+\section{Section heading}
+\subsection{Subsection heading}
+\paragraph{Paragraph heading} \ldots
+
+\chapter[byline={with Kevin}]{Chapter heading}
 \section{Section heading}
 \subsection{Subsection heading}
 \paragraph{Paragraph heading} \ldots

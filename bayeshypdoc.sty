@@ -1,0 +1,56 @@
+%
+% This package contains macros used for generating documentation for the
+% bayeshyp.cls document class.
+%
+
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+
+\ProvidesExplClass {bayeshypdoc} {2017/02/01} {1.0.0}
+  {Documentation macros}
+
+\RequirePackage{listings}
+
+% Shortcut for verbatim code
+\lstMakeShortInline[basicstyle=\ttfamily]|
+
+\lstdefinestyle{latex}{
+  language=[LaTeX]TeX,
+  columns=fullflexible,
+  basicstyle=\ttfamily,
+  moredelim=**[is][\bayeshypdoc_boxmeta:]{<}{>},
+}
+
+% Define `syntax' environment for LaTeX syntax
+\lstnewenvironment{syntax}[1][]{
+  \lstset{style=latex,#1}
+}{}
+
+\NewDocumentEnvironment {hl_env} { } {
+  \begin{lrbox}{\@tempboxa}
+    \rmfamily\itshape
+} {
+  \end{lrbox}
+  \ensuremath{\langle}
+    \usebox{\@tempboxa}\kern.05em
+  \ensuremath{\rangle}
+}
+
+\cs_new:Nn \bayeshypdoc_boxmeta: {
+  \begin{hl_env}
+    \bgroup\aftergroup\bayeshypdoc_hl_endenv:
+}
+
+\cs_new:Nn \bayeshypdoc_hl_endenv: {
+  \end{hl_env}
+  \egroup
+}
+
+\NewDocumentCommand \syn { o } {
+  \lstinline[style=latex,\IfValueT{#1}{#1}]
+}
+
+
+

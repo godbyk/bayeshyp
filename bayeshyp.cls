@@ -86,6 +86,16 @@
   {\huge\rmfamily\itshape}% before the title body
   [\ifthenelse{\NOT\boolean{@tufte@symmetric}}{\end{fullwidth}}{}]% after the title body
 
+\titleformat{\section}%
+  [hang]% shape
+  {\normalfont\Large\scshape}% format applied to label+text
+  {\thesection}% label
+  {1em}% horizontal separation between label and title body
+  {}% before the title body
+  []% after the title body
+
+
+
 \setcounter{secnumdepth}{1}
 
 %
@@ -187,7 +197,6 @@
 }
 
 \cs_set_eq:NN \part \Part
-
 
 %
 % Code listings

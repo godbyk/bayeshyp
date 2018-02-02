@@ -32,15 +32,17 @@
 % FIXME Temporary
 \let\subsubsection\subsection
 
+\usepackage{bayeshypdoc}
+
 \begin{document}
 
 \maketitle
 
-\tableofcontents\thispagestyle{empty}
+\tableofcontents
 
 \mainmatter
 
-\setcounter{secnumdepth}{4}
+\setcounter{secnumdepth}{1}
 
 \part{Blind document}
 \Blinddocument
@@ -55,10 +57,90 @@
 
 \part[toc={Old-style, short title=this}]{Another super long part title that wouldn't fit nicely in a table of contents or running head}
 
-\chapter{Graphical Excellence}
-\setcounter{page}{13}
+\chapter{Features of \texttt{bayeshyp.cls}}
 
-\lipsum
+\section{Title page}
+
+The title page has a new design and a couple new macros to go along with it.
+
+\paragraph{Subtitle}
+
+A subtitle may be specified using the \syn|\subtitle| macro:
+
+\begin{syntax}
+  \subtitle{Examples for Students}
+\end{syntax}
+
+\paragraph{Multiple authors}
+
+A comma-separated list of authors may be provided using the \syn|\authors| macro. For example:
+\begin{syntax}
+  \authors{
+    Eric-Jan Wagenmakers,
+    Michael D. Lee,
+    Jeffrey N. Rouder,
+    Dora Matzke,
+    Maarten Marsman,
+    Jonathon Love,
+    Alexander Ly,
+    Ravi Selkser,
+    Tahira Jamil,
+    Quentin F. Gronau,
+    Richard D. Morey
+  }
+\end{syntax}
+
+The authors are listed on the title page in the order provided.
+Author names will not be split across lines.
+
+
+\section{Mathematical notation shortcuts}
+
+\paragraph{Conditional probabilities}
+To typeset probabilities or conditional probabilities in math mode, use the \syn|\p| macro:
+\begin{syntax}
+  \p(<variable>)
+  \p(<hypothesis>|<evidence>)
+  \p*(<hypothesis>|<evidence>)
+  \p[<size>](<hypothesis>|<evidence>)
+\end{syntax}
+where \syn|<variable>|, \syn|<hypothesis>|, and \syn|<evidence>| are mathematical expressions or variables.
+The \syn|\p*| variant will autoscale the parentheses and vertical bar to fit the contents of the expressions.
+You can specify a particular size using the \syn|\p[<size>]| variant.
+Possible sizes are \syn|\big|, \syn|\Big|, \syn|\bigg|, and \syn|\Bigg|.
+Note also that the arguments to the \syn|\p| macro are delimited by parentheses and not braces.
+
+\begin{gather*}
+  \p(x) \quad \p(x|y) \quad \p(\text{has cancer} | \text{tested positive}) \\
+  \p*(\frac{1+2}{3+4} | \sqrt{\frac{1}{1+\frac{1}{1+\frac{1}{1+\frac{1}{2}}}}}) \\
+  \p[\bigg](\frac{1+2}{3+4} | \sqrt{\frac{1}{2}})
+\end{gather*}
+
+
+\section{Matlab code listings}
+
+The \texttt{matlab} environment is used to display Matlab code listings.
+
+\begin{syntax}
+  \begin{matlab}[<additional settings>]
+    % Matlab code goes here...
+
+    disp('Look, a margin note!'); (*@ This comment appears in the margin note area... @*)
+  \end{matlab}
+\end{syntax}
+
+Additional key--value settings for the environment may be passed as an optional argument.
+Text between \syn|(*@| and \syn|*@)| will be typeset as a margin note.
+
+\begin{matlab}
+% This code listing is for Matlab code.
+% This is a regular Matlab code comment.
+
+disp('Look, a margin note!'); (*@ This comment appears in the margin note area. It may contain \LaTeX{} formatting commands and math: \[ \frac{ \p(A|B) = \p(B|A) \p(A)}{\p(B)}\text{.} \] @*)
+
+% And some more random Matlab code just to pad things out a bit more...
+
+\end{matlab}
 
 \chapter{Graphical Integrity}
 \setcounter{page}{53}

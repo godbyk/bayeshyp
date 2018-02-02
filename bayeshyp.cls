@@ -188,3 +188,96 @@
 
 \cs_set_eq:NN \part \Part
 
+
+%
+% Code listings
+%
+\RequirePackage{listings}
+\NewDocumentEnvironment { codecomment } { } {
+  \begin{lrbox}{\@tufte@margin@floatbox}
+    \begin{minipage}[t]{\marginparwidth}
+      \@tufte@marginnote@font
+      \@tufte@marginnote@justification
+      \@tufte@margin@par
+      \noindent\itshape\leavevmode\ignorespaces
+}{
+    \end{minipage}
+  \end{lrbox}
+  \marginpar{\usebox{\@tufte@margin@floatbox}}
+}
+
+\definecolor{MyDarkGreen}{rgb}{0.0,.2,0.0}
+\definecolor{Blue}{rgb}{0.0,0.0,.5}
+\definecolor{Purple}{rgb}{0.5,0.0,0.5}
+
+\lstloadlanguages{matlab}
+\lstnewenvironment{matlab}[1][]{
+  \lstset{language=matlab,
+    frame=none, % no frame around code
+    basicstyle=\small\ttfamily, % Use small true type font
+    keywordstyle=[1], % matlab functions same
+    keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+    keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+    identifierstyle=, % Nothing special about identifiers
+    commentstyle=\color{MyDarkGreen}\small, % Comments small dark green courier font
+    stringstyle=\color{Purple}, % Strings are purple
+    showstringspaces=false, % Don't put marks in string spaces
+    tabsize=1, % spaces per tab
+    %
+    % Put standard matlab functions not included in the default language here
+    morekeywords={rand},
+    %
+    % Put matlab function parameters here
+    morekeywords=[2]{on, off, interp},
+    %
+    % Put user defined functions here
+    morekeywords=[3]{test},
+    %
+    morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+    numbers=left, % Line numbers on left
+    firstnumber=1, % Line numbers start with line 1
+    numberstyle=\tiny\sffamily\color{Black}, % Line numbers are blue and small
+    stepnumber=1, % Line numbers steps
+    breaklines=true,breakatwhitespace=false,
+    %
+    % Put comments in margin notes
+    escapeinside={(*@}{@*)},
+    escapebegin={\begin{codecomment}},
+    escapeend={\end{codecomment}},
+    #1
+  }
+}{}
+
+%
+% Handy helper macros
+%
+
+\RequirePackage{mathtools}
+
+\tl_new:N \l__my_active_tl
+\cs_new_protected:Nn \bayes_mathdef:Nn {
+  \tl_set_rescan:Nnn \l__my_active_tl {\char_set_catcode_active:N #1} {#1}
+  \exp_last_unbraced:NV \cs_set:Npn~\l__my_active_tl~{ #2 }
+  \char_set_mathcode:nn {`#1} {"8000}
+}
+
+\cs_new:Nn \bayes_activatebar: {
+  \bayes_mathdef:Nn | {\;\delimsize\vert\;}
+}
+
+\DeclarePairedDelimiterX \bayes_p_aux:n [1] () {
+  \bayes_activatebar:
+  #1
+}
+
+\NewDocumentCommand \p { s O{} r() } {
+  \operatorname{p}
+  \group_begin:
+    \IfBooleanTF {#1} {
+      \bayes_p_aux:n*{#3}
+    } {
+      \bayes_p_aux:n[#2]{#3}
+    }
+  \group_end:
+}
+

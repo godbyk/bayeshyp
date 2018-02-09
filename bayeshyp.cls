@@ -270,42 +270,76 @@
 \definecolor{Purple}{rgb}{0.5,0.0,0.5}
 
 \lstloadlanguages{matlab}
-\lstnewenvironment{matlab}[1][]{
-  \lstset{language=matlab,
-    frame=none, % no frame around code
-    basicstyle=\small\ttfamily, % Use small true type font
-    keywordstyle=[1], % matlab functions same
-    keywordstyle=[2]\color{Purple}, % Perl function arguments purple
-    keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
-    identifierstyle=, % Nothing special about identifiers
-    commentstyle=\color{MyDarkGreen}\small, % Comments small dark green courier font
-    stringstyle=\color{Purple}, % Strings are purple
-    showstringspaces=false, % Don't put marks in string spaces
-    tabsize=1, % spaces per tab
-    %
-    % Put standard matlab functions not included in the default language here
-    morekeywords={rand},
-    %
-    % Put matlab function parameters here
-    morekeywords=[2]{on, off, interp},
-    %
-    % Put user defined functions here
-    morekeywords=[3]{test},
-    %
-    morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
-    numbers=left, % Line numbers on left
-    firstnumber=1, % Line numbers start with line 1
-    numberstyle=\tiny\sffamily\color{Black}, % Line numbers are blue and small
-    stepnumber=1, % Line numbers steps
-    breaklines=true,breakatwhitespace=false,
-    %
-    % Put comments in margin notes
-    escapeinside={(*@}{@*)},
-    escapebegin={\begin{codecomment}},
-    escapeend={\end{codecomment}},
-    #1
-  }
+\lstdefinestyle{matlab}{%
+  language=matlab,
+  frame=none, % no frame around code
+  basicstyle=\small\ttfamily, % Use small true type font
+  keywordstyle=[1], % matlab functions same
+  keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+  keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+  identifierstyle=, % Nothing special about identifiers
+  commentstyle=\color{MyDarkGreen}\small, % Comments small dark green courier font
+  stringstyle=\color{Purple}, % Strings are purple
+  showstringspaces=false, % Don't put marks in string spaces
+  tabsize=1, % spaces per tab
+  %
+  % Put standard matlab functions not included in the default language here
+  morekeywords={rand},
+  %
+  % Put matlab function parameters here
+  morekeywords=[2]{on, off, interp},
+  %
+  % Put user defined functions here
+  morekeywords=[3]{test},
+  %
+  morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+  numbers=left, % Line numbers on left
+  firstnumber=1, % Line numbers start with line 1
+  numberstyle=\tiny\sffamily\color{Black}, % Line numbers are blue and small
+  stepnumber=1, % Line numbers steps
+  breaklines=true,breakatwhitespace=false,
+  %
+  % Put comments in margin notes
+  escapeinside={(*@}{@*)},
+  escapebegin={\begin{codecomment}},
+  escapeend={\end{codecomment}},
+}
+
+\lstnewenvironment{matlab}[1][]{%
+  \lstset{style=matlab,#1}%
 }{}
+
+
+%
+% Framed environments
+%
+
+\RequirePackage{mdframed}
+
+\mdfdefinestyle{graybg}{
+  backgroundcolor=lightgray,
+  leftmargin=-\parindent,
+  rightmargin=-\parindent,
+  innermargin=-\parindent,
+  outermargin=-\parindent,
+  innerleftmargin=\parindent,
+  innerrightmargin=\parindent,
+  innertopmargin=\parindent,
+  innerbottommargin=\parindent,
+  hidealllines=true,
+}
+
+\NewDocumentEnvironment { graybg } { o } {
+  \IfValueTF {#1} {
+    \begin{mdframed}[style=graybg,frametitle=#1]
+  } {
+    \begin{mdframed}[style=graybg]
+  }
+    \@tufte@justification
+} {
+  \end{mdframed}
+}
+
 
 %
 % Handy helper macros

@@ -316,8 +316,16 @@
 
 \RequirePackage{mdframed}
 
+\definecolor{BayesLightGray}{rgb}{0.85,0.85,0.85}
+\definecolor{BayesDarkGray}{rgb}{0.4,0.4,0.4}
+
 \mdfdefinestyle{graybg}{
-  backgroundcolor=lightgray,
+  backgroundcolor=BayesLightGray,
+  frametitlebackgroundcolor=BayesDarkGray,
+  frametitlefontcolor=white,
+  frametitlefont=\sffamily\bfseries,
+  frametitlealignment=\centering,
+  font=\sffamily,
   leftmargin=-\parindent,
   rightmargin=-\parindent,
   innermargin=-\parindent,

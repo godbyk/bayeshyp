@@ -109,7 +109,7 @@
 
 \titlecontents{part}%
     [0pt]% distance from left margin
-    {\vspace{0.5\baselineskip}}% above (global formatting of entry)
+    {\addvspace{0.5\baselineskip}}% above (global formatting of entry)
     {{\tl_upper_case:n{\partname\space\thecontentslabel}}\uppercase}% before w/ label (label = ``Part I'')
     {{\tl_upper_case:n{\partname\space\thecontentslabel}}\uppercase}% before w/o label
     {}% filler and page (leaders and page num)
@@ -117,7 +117,7 @@
 
 \titlecontents{chapter}%
     [2\g_bayes_contentsindent_dim]% distance from left margin
-    {\vspace{0.5\baselineskip}}% above (global formatting of entry)
+    {\addvspace{0.5\baselineskip}\pagebreak[1]}% above (global formatting of entry)
     {\contentslabel{\g_bayes_contentsindent_dim}\textit}% before w/ label (label = ``Chapter 1'')
     {\textit}% before w/o label
     {\qquad\thecontentspage}% filler and page (leaders and page num)

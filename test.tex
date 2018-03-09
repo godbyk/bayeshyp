@@ -31,6 +31,7 @@
 }
 \publisher{Jasp Publishing}
 
+
 % FIXME Temporary
 \let\subsubsection\subsection
 
@@ -220,14 +221,116 @@ disp('More code...');
 \subsection{Subsection heading}
 \paragraph{Paragraph heading} \ldots
 
-\begin{graybg}
+\begin{graybg}[][h]
   This gray box has no title. \lipsum[2]
 \end{graybg}
 
-\begin{graybg}[Box title]
-  This gray box has a title and flows across multiple pages.
-  \lipsum[4-10]
+\begin{graybg}[Frequentist subjectivity]
+  ``Today one wonders how it is possible that orthodox logic continues to be
+  taught in some places year after year and praised as `objective', while
+  Bayesians are charged with `subjectivity'. Orthodoxians, preoccupied with
+  fantasies about nonexistent data sets and, in principle, unobservable
+  limiting frequencies---while ignoring relevant prior information---are in no
+  position to charge anybody with `subjectivity'."\cite{Jaynes2003}
 \end{graybg}
+
+Testing citation \cite{Jaynes2003}.
+
+\lipsum
+
+\begin{graybg*}[Frequentist subjectivity]
+  ``Today one wonders how it is possible that orthodox logic continues to be
+  taught in some places year after year and praised as `objective', while
+  Bayesians are charged with `subjectivity'. Orthodoxians, preoccupied with
+  fantasies about nonexistent data sets and, in principle, unobservable
+  limiting frequencies---while ignoring relevant prior information---are in no
+  position to charge anybody with `subjectivity'."\cite{Jaynes2003}
+\end{graybg*}
+
+\begin{graybg}[The zeros trick, ones trick, and WBDev]
+  \index{WBDev}
+  The zeros trick and ones trick are extremely useful, and relatively easy to
+  implement in many cases, but a little difficult to understand conceptually.
+  The key insight is that the negative log-likelihood of a sample of 0 from
+  $\mathrm{Poisson}\bigl(\phi\bigr)$ is $\phi$, and similarly for a sample of 1
+  from $\mathrm{Bernoulli}\bigl(\theta\bigr)$ it is $\theta$. So, by setting
+  $\log \phi$ or $\theta$ appropriately, and forcing 1 or 0 to be observed,
+  sampling effectively proceeds from the distribution defined by $\phi$ or
+  $\theta$.
+
+  More complicated extensions to the distributions and functions available in
+  WinBUGS require using the WinBUGS Development Interface
+  \cite{Lunn2003}. This is an add-on program that allows the user to
+  hand-code functions and distributions in Component Pascal.
+  \cite{Abelson1997} provide a tutorial on WBDev that includes
+  simple worked examples of defining new distributions and functions. More
+  detailed cognitive science applications are provided by
+  \cite{AczelEtAl2017} implementing the Expectancy-Valence model of
+  decision-making as a function in WBDev, and \cite{VandekerckhoveEtAl2011}
+  implementing the drift-diffusion model as a distribution in WBDev. Both of
+  these applications would be impractical without WBDev.
+\end{graybg}
+
+\lipsum
+
+\begin{graybg}[Assessing and improving convergence]
+  \index{convergence}
+  In a perfect world, a single MCMC chain would immediately begin drawing
+  samples from the posterior distribution, and the only computational issue
+  would be how many are needed to form a sufficiently precise approximation.
+  This ideal state of affairs is often not what happens, and latent-mixture
+  models are notorious for needing convergence checks. So, this is a good place
+  to list some checks.\cite{Gelman1996,GelmanHill2007}
+
+  The basic principle is that, when the sampling process has converged, chains
+  with substantially different starting values should be indistinguishable from
+  each other. One implication of this requirement is that chains should vary
+  around a constant mean, so a slow drift up or down signals a problem. And, if
+  the sampling process has converged, each individual chain should look like a
+  ``fat hairy caterpillar," because this visual appearance is generated when
+  successive values are relatively independent. As a formal test for
+  convergence, the $\hat{R}$ statistic\cite{GelmanRubin1992} is widely used.
+  It is basically a measure of between-chain to within-chain variance, and so
+  values close to 1 indicate convergence. As a rule of thumb, values higher
+  than 1.1 are (deeply) suspect. If you were not paying much attention to the
+  \texttt{rhat} values WinBUGS is returning to Matlab and R in previous
+  modeling exercises, now is a good time to start checking them.
+
+  There are three basic remedies for a lack of convergence, easily implemented
+  in WinBUGS for any model. The first is simply to collect many more samples,
+  or more chains of samples, and wait (and hope) for convergence. The second is
+  to increase the number of \emph{burn-in}\index{burn-in} samples, which are
+  initial samples in a chain that are discarded. This will be effective if
+  separate chains are sensitive to their starting points, and take some time to
+  converge. A worked example of this is presented in Section~\ref{hsdt}. The
+  third is to \emph{thin}\index{thinning} the samples, by retaining only one
+  out of every $n$. This will be effective if a chain is autocorrelated, with
+  lack of independence between samples. A worked example of this is presented
+  in Section~\ref{surveys}. There are other, more advanced, methods for
+  improving convergence in WinBUGS, involving changing the model itself. Worked
+  examples of the \emph{parameter expansion} method are presented in
+  Sections~\ref{hesdt} and \ref{lmpt}.\label{assessingconvergence}
+\end{graybg}
+
+\lipsum
+
+\begin{graybg}[Scripts for graphical models]
+  The scripts that implement graphical models in WinBUGS are declarative,
+  rather than procedural. This means the order of the commands does not matter.
+  All that a script does is define the observed and unobserved variables in a
+  graphical model, saying how they are distributed, and how they relate to each
+  other. This is inherently a structure, rather than a process, and so order is
+  not important. In practice this means, for example, that a separate loop is
+  not needed in a script like \texttt{Exam\_2.txt} to define \texttt{k[i]},
+  \texttt{z[i]}, and \texttt{phi[i]}. Exactly the same graphical model would be
+  defined if they were all placed inside one \texttt{for (i in 1:p)} loop.
+  Sometimes, however, it is conceptually clearer to use separate loops to
+  implement different parts of a graphical
+  model.\label{scriptsforgraphicalmodels}
+\end{graybg}
+
+\lipsum
+
 
 \chapter[byline={with Kevin}]{Chapter heading}
 \section{Section heading}
@@ -288,13 +391,9 @@ disp('More code...');
 \chapter{Epilogue: Designs for the Display of Information}
 \setcounter{page}{191}
 
-\chapter{Another}
+\bibliography{test}
+\bibliographystyle{plainnat}
 
-\chapter{And Another}
-
-\chapter{Yet Another}
-
-\chapter{And Still Another}
 
 \end{document}
 

@@ -326,28 +326,178 @@
   frametitlefont=\sffamily\bfseries,
   frametitlealignment=\centering,
   font=\sffamily,
-  leftmargin=-\parindent,
-  rightmargin=-\parindent,
-  innermargin=-\parindent,
-  outermargin=-\parindent,
-  innerleftmargin=\parindent,
-  innerrightmargin=\parindent,
-  innertopmargin=\parindent,
-  innerbottommargin=\parindent,
+  leftmargin=\parindent,
+  rightmargin=\parindent,
+  innermargin=\parindent,
+  outermargin=\parindent,
+  %leftmargin=-\parindent,
+  %rightmargin=-\parindent,
+  %innermargin=-\parindent,
+  %outermargin=-\parindent,
+  %innerleftmargin=\parindent,
+  %innerrightmargin=\parindent,
+  %innertopmargin=\parindent,
+  %innerbottommargin=\parindent,
   hidealllines=true,
 }
 
-\NewDocumentEnvironment { graybg } { o } {
-  \IfValueTF {#1} {
-    \begin{mdframed}[style=graybg,frametitle=#1]
+\NewDocumentEnvironment { graybg } { s o O{htbp} } {
+  \IfBooleanTF {#1} {
+    \begin{@tufte@float}[#3]{figure}{star}
+  } {
+    \begin{@tufte@float}[#3]{figure}{}
+  }
+  \IfValueTF {#2} {
+    \begin{mdframed}[style=graybg,frametitle={#2}]
   } {
     \begin{mdframed}[style=graybg]
   }
-    \@tufte@justification
+  \@tufte@justification
 } {
-  \end{mdframed}
+    \end{mdframed}
+  \end{@tufte@float}
 }
 
+% Starred versions of the environment
+\cs_new:cpn {graybg*} {\graybg*}
+\cs_new_eq:cN {endgraybg*} \endgraybg
+
+% Footnote macros for minipages
+\newcommand\mpfootnotemark{%
+  \@ifnextchar[%
+    \@xmpfootnotemark
+    {%
+      \stepcounter\@mpfn
+      \protected@xdef\@thefnmark{\thempfn}%
+      \@footnotemark
+    }%
+}
+\def\@xmpfootnotemark[#1]{%
+  \begingroup
+    \csname c@\@mpfn\endcsname #1\relax
+    \unrestored@protected@xdef\@thefnmark{\thempfn}%
+  \endgroup
+  \@footnotemark
+}
+
+
+% Collect \cites within floats
+\newcommand{\@tufte@infloat@cite}[1]{%
+  \protected@xdef\@thefnmark{\thempfn}%
+  \mpfootnotemark%
+  \@tufte@add@citation{{#1}}%
+}
+
+\cs_new:Npn \tufte_bibentry:N #1 {
+  \clist_map_inline:Nn #1 {
+    \bibentry{##1}\par
+  }
+}
+
+\newcommand{\@tufte@print@infloat@citations}{
+  \clist_set:Nx \l_tmpa_clist { \@tufte@citations }
+  \clist_map_inline:Nn \l_tmpa_clist {
+    \clist_set:Nx \l_tmpb_clist { ##1 }
+    \footnotesize\normalfont\@tufte@citation@font
+    \noindent%
+    \stepcounter\@mpfn%
+    \protected@xdef\@thefnmark{\thempfn}%
+    \protected@edef\@currentlabel{%
+      \csname p@footnote\endcsname\@thefnmark%
+    }%
+    \color@begingroup%
+      \@makefntext{%
+        \ignorespaces
+        \tufte_bibentry:N \l_tmpb_clist
+      }%
+    \color@endgroup%
+  }
+}
+
+
+% Added code to handle \cite within a float body (not just the caption)
+\renewenvironment{@tufte@float}[3][htbp]%
+  {% begin @tufte@float
+    % Should this float be full-width or just text-width?
+    \ifthenelse{\equal{#3}{star}}%
+      {\gsetboolean{@tufte@float@star}{true}}%
+      {\gsetboolean{@tufte@float@star}{false}}%
+    % Check page side (recto/verso) and store detected value -- can be overriden in environment contents
+    \@tufte@checkoddpage%
+    \ifthenelse{\boolean{@tufte@odd@page}}%
+      {\gsetboolean{@tufte@float@recto}{true}\@tufte@float@debug{Detected page: [recto/odd]}}%
+      {\gsetboolean{@tufte@float@recto}{false}\@tufte@float@debug{Detected page: [verso/even]}}%
+    % If the float placement specifier is 'b' and only 'b', then bottom-align the mini-pages, otherwise top-align them.
+    \renewcommand{\@tufte@fps}{#1}%
+    \@tufte@float@debug{Allowed positions: [#1]}%
+    \ifthenelse{\equal{#1}{b}\OR\equal{#1}{B}}%
+      {\renewcommand{\floatalignment}{b}\@tufte@float@debug{Presumed position: [bottom]}}%
+      {\renewcommand{\floatalignment}{t}\@tufte@float@debug{Presumed position: [top]}}%
+    % Capture the contents of the \caption and \label commands to use later
+    \global\let\@tufte@orig@caption\caption%
+    \global\let\@tufte@orig@label\label%
+    \renewcommand{\caption}{\optparams{\@tufte@caption}{[][0pt]}}%
+    \renewcommand{\label}[1]{\@tufte@label{##1}}%
+    % Handle subfigure package compatibility
+    \ifthenelse{\boolean{@tufte@packages@subfigure}}{%
+      % don't move the label while inside a \subfigure or \subtable command
+      \global\let\label\@tufte@orig@label%
+    }{}% subfigure package is not loaded
+    \@tufte@orig@float{#2}[#1]%
+    \ifthenelse{\boolean{@tufte@float@star}}%
+      {\setlength{\@tufte@float@contents@width}{\@tufte@fullwidth}}%
+      {\setlength{\@tufte@float@contents@width}{\textwidth}}%
+    \begin{lrbox}{\@tufte@figure@box}%
+      \begin{minipage}[\floatalignment]{\@tufte@float@contents@width}\hbox{}%
+        \gdef\@tufte@citations{}%           clear out any old citations
+        \let\cite\@tufte@infloat@cite
+  }{% end @tufte@float
+      \par\hbox{}\vspace{-\baselineskip}\ifthenelse{\prevdepth>0}{\vspace{-\prevdepth}}{}% align baselines of boxes
+      \end{minipage}%
+    \end{lrbox}%
+    % build the caption box
+    \begin{lrbox}{\@tufte@caption@box}%
+      \begin{minipage}[\floatalignment]{\marginparwidth}\hbox{}%
+        \ifthenelse{\NOT\equal{\@tufte@stored@caption}{}}{\@tufte@orig@caption[\@tufte@stored@shortcaption]{\@tufte@stored@caption}}{}%
+        \ifthenelse{\NOT\equal{\@tufte@citations}{}}{\@tufte@print@infloat@citations}{}%
+        \ifthenelse{\NOT\equal{\@tufte@stored@label}{}}{\@tufte@orig@label{\@tufte@stored@label}}{}%
+        \par\vspace{-\prevdepth}%% TODO: DOUBLE-CHECK FOR SAFETY
+      \end{minipage}%
+    \end{lrbox}%
+    % now typeset the stored boxes
+    \begin{fullwidth}%
+      \begin{minipage}[\floatalignment]{\linewidth}%
+        \ifthenelse{\boolean{@tufte@float@star}}%
+          {\@tufte@float@fullwidth[\@tufte@caption@vertical@offset]{\@tufte@figure@box}{\@tufte@caption@box}}%
+          {\@tufte@float@textwidth[\@tufte@caption@vertical@offset]{\@tufte@figure@box}{\@tufte@caption@box}}%
+      \end{minipage}%
+    \end{fullwidth}%
+    \@tufte@orig@endfloat% end original LaTeX float environment
+    % output debug info
+    \ifthenelse{\boolean{@tufte@debug}}{%
+      \typeout{^^J^^J----------- Tufte-LaTeX float information ----------}%
+      \ifthenelse{\equal{\@tufte@stored@label}{}}%
+        {\typeout{Warning: Float unlabeled!}}%
+        {\typeout{Float label: [\@tufte@stored@label]}}%
+      \typeout{Page number: [\thepage]}%
+      \def\MessageBreak{^^J}%
+      \typeout{\@tufte@float@debug@info}%
+      \ifthenelse{\boolean{@tufte@symmetric}}%
+        {\typeout{Symmetric: [true]}}%
+        {\typeout{Symmetric: [false]}}%
+      \typeout{----------------------------------------------------^^J^^J}%
+    }{}%
+    % reset commands and temp boxes and captions
+    \gdef\@tufte@float@debug@info{}%
+    \let\caption\@tufte@orig@caption%
+    \let\label\@tufte@orig@label%
+    \begin{lrbox}{\@tufte@figure@box}\hbox{}\end{lrbox}%
+    \begin{lrbox}{\@tufte@caption@box}\hbox{}\end{lrbox}%
+    \gdef\@tufte@stored@shortcaption{}%
+    \gdef\@tufte@stored@caption{}%
+    \gdef\@tufte@stored@label{}%
+    \gsetlength{\@tufte@caption@vertical@offset}{0pt}% reset caption offset
+  }
 
 %
 % Handy helper macros

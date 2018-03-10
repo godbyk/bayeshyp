@@ -349,7 +349,7 @@
 \def\fnum@bayesbox{\bayesboxname\nobreakspace\thebayesbox}
 \def\bayesboxname{Example}
 
-\renewcommand\listofbayesbox{%
+\newcommand\listofbayesbox{%
   \ifthenelse{\equal{\@tufte@class}{book}}{%
     \chapter*{\listbayesboxname}%
   }{%

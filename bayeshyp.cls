@@ -94,8 +94,6 @@
   {}% before the title body
   []% after the title body
 
-
-
 \setcounter{secnumdepth}{1}
 
 %
@@ -341,11 +339,33 @@
   hidealllines=true,
 }
 
+% Declare new float type for our boxes
+\newcounter{bayesbox}[chapter]
+\renewcommand \thebayesbox
+     {\ifnum \c@chapter>\z@ \thechapter.\fi \@arabic\c@bayesbox}
+\def\fps@bayesbox{tbp}
+\def\ftype@bayesbox{8}% must by power of 2: 1-figure, 2-table, 4-often defined by other packages
+\def\ext@bayesbox{lob}
+\def\fnum@bayesbox{\bayesboxname\nobreakspace\thebayesbox}
+\def\bayesboxname{Example}
+
+\renewcommand\listofbayesbox{%
+  \ifthenelse{\equal{\@tufte@class}{book}}{%
+    \chapter*{\listbayesboxname}%
+  }{%
+    \section*{\listbayesboxname}%
+  }%
+  \@starttoc{lob}%
+}
+\let\l@bayesbox\l@figure
+
+
+
 \NewDocumentEnvironment { graybg } { s o O{htbp} } {
   \IfBooleanTF {#1} {
-    \begin{@tufte@float}[#3]{figure}{star}
+    \begin{@tufte@float}[#3]{bayesbox}{star}
   } {
-    \begin{@tufte@float}[#3]{figure}{}
+    \begin{@tufte@float}[#3]{bayesbox}{}
   }
   \IfValueTF {#2} {
     \begin{mdframed}[style=graybg,frametitle={#2}]

@@ -145,27 +145,35 @@
 
 \keys_define:nn { bayeshyp / part } {
   starred       .bool_set:N = \l_bayes_part_starred_bool,
+  starred       .initial:x = {false},
   image         .tl_set:N = \l_bayes_part_image_tl,
+  image         .initial:x = {},
   image-options .tl_set:N = \l_bayes_part_graphics_options_tl,
+  image-options .initial:x = {},
   toc           .tl_set:N = \l_bayes_part_toc_tl,
+  toc           .initial:x = {},
   unknown       .code:n = { \msg_error:nn { bayeshyp } { old-style-short-heading } },
 }
 
 \cs_set_eq:NN \bayes_backup_part: \part
 
 \cs_new:Npn \cs_bayes_part:nn #1#2 {
-  \group_begin:
-    \keys_set:nn {bayeshyp / part} {#1}
-    \bool_if:NTF \l_bayes_part_starred_bool {
-      \bayes_backup_part:*{#2}
+  \keys_set:nn {bayeshyp / part} {
+    starred=false,
+    image={},
+    image-options={},
+    toc={}
+  }
+  \keys_set:nn {bayeshyp / part} {#1}
+  \bool_if:NTF \l_bayes_part_starred_bool {
+    \bayes_backup_part:*{#2}
+  } {
+    \tl_if_empty:NTF \l_bayes_part_toc_tl {
+      \bayes_backup_part:[#2]{#2}
     } {
-      \tl_if_empty:NTF \l_bayes_part_toc_tl {
-        \bayes_backup_part:[#2]{#2}
-      } {
-        \bayes_backup_part:[\l_bayes_part_toc_tl]{#2}
-      }
+      \bayes_backup_part:[\l_bayes_part_toc_tl]{#2}
     }
-  \group_end:
+  }
 }
 
 \cs_set_eq:NN \bayes_backup_endpart: \@endpart
@@ -174,8 +182,8 @@
     \begin{center}
       \expandafter\includegraphics\expandafter[\l_bayes_part_graphics_options_tl]{\l_bayes_part_image_tl}
     \end{center}
-    \bayes_backup_endpart:
   }
+  \bayes_backup_endpart:
 }
 \cs_set_eq:NN \@endpart \bayes_endpart:
 
@@ -198,49 +206,72 @@
 \cs_set_eq:NN \part \Part
 
 % Chapter
-\bool_new:N \l_bayes_chapter_starred_bool
 \tl_new:N \l_bayes_chapter_toc_tl
 \tl_new:N \l_bayes_chapter_byline_tl
 \keys_define:nn { bayeshyp / chapter } {
-  starred       .bool_set:N = \l_bayes_chapter_starred_bool,
   toc           .tl_set:N = \l_bayes_chapter_toc_tl,
+  toc           .initial:x = {},
   byline        .tl_set:N = \l_bayes_chapter_byline_tl,
+  byline        .initial:x = {},
   unknown       .code:n = { \msg_error:nn { bayeshyp } { old-style-short-heading } },
 }
 
 \cs_set_eq:NN \bayes_backup_chapter: \chapter
 
+\cs_new:Npn \cs_bayes_group_insert_after:n #1 {
+  \tl_gset:Nn \g_tmpa_tl {#1}
+  \group_insert_after:N \g_tmpa_tl
+}
+
+\cs_generate_variant:Nn \cs_bayes_group_insert_after:n { o }
+
+\cs_new:Npn \cs_bayes_chapter_expanded:nnn #1#2#3 {
+  \tl_if_empty:nTF {#3} {
+    \cs_bayes_group_insert_after:n {
+      \bayes_backup_chapter:[#1]{#2}
+    }
+  } {
+    \cs_bayes_group_insert_after:n {
+      \bayes_backup_chapter:[#1]{#2\\\relax#3}
+    }
+  }
+}
+
+\cs_new:Npn \cs_bayes_chapter_starred_expanded:nn #1#2 {
+  \tl_if_empty:nTF {#2} {
+    \cs_bayes_group_insert_after:n {
+      \bayes_backup_chapter:{#1}
+    }
+  } {
+    \cs_bayes_group_insert_after:n {
+      \bayes_backup_chapter:{#1\\\relax#2}
+    }
+  }
+}
+
 \cs_new:Npn \cs_bayes_chapter:nn #1#2 {
   \group_begin:
     \keys_set:nn {bayeshyp / chapter} {#1}
-    \tl_if_empty:NF \l_bayes_chapter_byline_tl {
-      \tl_put_left:Nn \l_bayes_chapter_byline_tl {\\ \LARGE}
-    }
-    \bool_if:NTF \l_bayes_chapter_starred_bool {
-      \bayes_backup_chapter:*{#2 \l_bayes_chapter_byline_tl}
+    \tl_if_empty:NTF \l_bayes_chapter_toc_tl {
+      \exp_args:Nnno \cs_bayes_chapter_expanded:nnn { #2 } { #2 } { \l_bayes_chapter_byline_tl }
     } {
-      \tl_if_empty:NTF \l_bayes_chapter_toc_tl {
-        \bayes_backup_chapter:[#2]{#2 \l_bayes_chapter_byline_tl}
-      } {
-        \bayes_backup_chapter:[\l_bayes_chapter_toc_tl]{#2 \l_bayes_chapter_byline_tl}
-      }
+      \exp_args:Nono \cs_bayes_chapter_expanded:nnn { \l_bayes_chapter_toc_tl } { #2 } { \l_bayes_chapter_byline_tl }
     }
   \group_end:
 }
 
-\NewDocumentCommand \Chapter { s o m } {
+\cs_new:Npn \cs_bayes_chapter_starred:nn #1#2 {
+  \group_begin:
+    \keys_set:nn {bayeshyp / chapter} {#1}
+    \exp_args:Nno \cs_bayes_chapter_starred_expanded:nn { #2 } { \l_bayes_chapter_byline_tl }
+  \group_end:
+}
+
+\NewDocumentCommand \Chapter { s O{} m } {
   \IfBooleanTF {#1} {
-    \IfValueTF {#2} {
-      \cs_bayes_chapter:nn {starred=true,#2} {#3}
-    } {
-      \cs_bayes_chapter:nn {starred=true} {#3}
-    }
+    \cs_bayes_chapter_starred:nn {#2} {#3}
   } {
-    \IfValueTF {#2} {
-      \cs_bayes_chapter:nn {starred=false,#2} {#3}
-    } {
-      \cs_bayes_chapter:nn {starred=false} {#3}
-    }
+    \cs_bayes_chapter:nn {#2} {#3}
   }
 }
 

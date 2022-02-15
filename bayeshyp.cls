@@ -249,6 +249,8 @@
   }
 }
 
+\cs_generate_variant:Nn \exp_args:Nnno { Nono }
+
 \cs_new:Npn \cs_bayes_chapter:nn #1#2 {
   \group_begin:
     \keys_set:nn {bayeshyp / chapter} {#1}
